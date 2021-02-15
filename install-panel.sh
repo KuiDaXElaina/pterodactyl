@@ -349,10 +349,10 @@ create_database() {
     echo "* The script should have asked you to set the MySQL root password earlier (not to be confused with the pterodactyl database user password)"
     echo "* MySQL will now ask you to enter the password before each command."
 
-    echo "* Create MySQL user."
+    echo "* 創建 MySQL 使用者"
     mysql -u root -p -e "CREATE USER '${MYSQL_USER}'@'127.0.0.1' IDENTIFIED BY '${MYSQL_PASSWORD}';"
 
-    echo "* Create database."
+    echo "* 創建資料庫."
     mysql -u root -p -e "CREATE DATABASE ${MYSQL_DB};"
 
     echo "* Grant privileges."
@@ -842,32 +842,34 @@ main() {
 
   # set database credentials
   print_brake 72
-  echo "* Database configuration."
+  echo "* 資料庫配置."
   echo ""
   echo "* This will be the credentials used for communication between the MySQL"
   echo "* database and the panel. You do not need to create the database"
   echo "* before running this script, the script will do that for you."
   echo ""
 
-  echo -n "* Database name (panel): "
+  echo -n "* 如使用預設名稱,即可Enter跳過配置"
+  echo -n "* 資料庫名稱 [預設: panel]: "
   read -r MYSQL_DB_INPUT
 
   [ -z "$MYSQL_DB_INPUT" ] && MYSQL_DB="panel" || MYSQL_DB=$MYSQL_DB_INPUT
 
-  echo -n "* Username (pterodactyl): "
+  echo -n "* 如使用預設名稱,即可Enter跳過配置"
+  echo -n "* 使用者名稱 [預設:  pterodactyl]: "
   read -r MYSQL_USER_INPUT
 
   [ -z "$MYSQL_USER_INPUT" ] && MYSQL_USER="pterodactyl" || MYSQL_USER=$MYSQL_USER_INPUT
 
   # MySQL password input
   rand_pw=$(tr -dc 'A-Za-z0-9!"#$%&()*+,-./:;<=>?@[\]^_`{|}~' </dev/urandom | head -c 64  ; echo)
-  password_input MYSQL_PASSWORD "Password (press enter to use randomly generated password): " "MySQL password cannot be empty" "$rand_pw"
+  password_input MYSQL_PASSWORD "使用者密碼 (按Enter使用隨機生成的密碼): " "MySQL密碼不能為空" "$rand_pw"
 
   readarray -t valid_timezones <<< "$(curl -s $GITHUB_BASE_URL/configs/valid_timezones.txt)"
-  echo "* List of valid timezones here $(hyperlink "https://www.php.net/manual/en/timezones.php")"
+  echo "* 各地時區列表 $(hyperlink "https://www.php.net/manual/en/timezones.php")"
 
   while [ -z "$timezone" ]; do
-    echo -n "* Select timezone [Europe/Stockholm]: "
+    echo -n "* 選擇時區 [Europe/Stockholm]: "
     read -r timezone_input
   
     array_contains_element "$timezone_input" "${valid_timezones[@]}" && timezone="$timezone_input"
@@ -923,19 +925,22 @@ summary() {
   print_brake 62
   echo "* 在ubuntu上使用Nginx的翼龍面板 $PTERODACTYL_VERSION"
   echo "「資料庫資訊配置」"
-  echo "* 資料庫名稱: $MYSQL_DB"
-  echo "* 使用者名稱: $MYSQL_USER"
-  echo "* 使用者密碼: (censored)"
+  echo "* MySQL 資料庫名稱: $MYSQL_DB"
+  echo "* MySQL 使用者名稱: $MYSQL_USER"
+  echo "* MySQL 使用者密碼: (censored)"
+  echo ""  
   echo "「面板配置」"
-   echo "* 時區: $timezone"
+  echo "* 時區: $timezone"
   echo "* 電子郵件: $email"
   echo "* 主機名/完整網域名稱: $FQDN"
+  echo "" 
   echo "「面板使用者配置」"
   echo "* 電子郵件: $user_email"
   echo "* 使用者密碼: $user_username"
   echo "* 姓氏: $user_firstname"
   echo "* 姓名 $user_lastname"
   echo "* 使用者密碼: (censored)"
+  echo ""
   echo "「其餘配置」"
   echo "* 配置防火牆? $CONFIGURE_FIREWALL"
   echo "* 配置讓我們加密? $CONFIGURE_LETSENCRYPT"
